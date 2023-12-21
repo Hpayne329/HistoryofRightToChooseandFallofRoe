@@ -1,0 +1,284 @@
+---
+title: "Expanding Floridian's Rights: Re-establish the Right to Choose in the Sunshine State"
+author: ""
+date: "2023-05-30"
+output: html_document
+---
+
+## Link to Petition:
+
+https://acrobat.adobe.com/link/track?uri=urn:aaid:scds:US:a38dd5f2-aa31-301e-97f4-f8b463ade074
+
+More Info:
+
+https://floridiansprotectingfreedom.com/petition/
+
+#Petition must be PRINTED and SIGNED by HAND and Mailed to:
+
+Name: Floridians Protecting Freedom, Inc.
+Address: Post Office Box 4068 Sarasota, FL 34230
+
+or for Miami-Dade County Residents (mailed or dropped off)
+
+6800 Almansa Street, Coral Gables, Florida, 33146
+
+## Background and Current Scenario
+
+  The right to an abortion was officially codified with the 1973 Supreme Court decision in Roe v. Wade, in which the court recognized that implicitly under the constitutional right to privacy, which is supported in either the 14th amendment (Due Process Clause) or 9th amendment, no state shall ban or restrict access to abortion during the first trimester. The states may place some restrictions during the second trimester to protect the mother's health, but not ban it. During the third trimester (starting at around 28 weeks), states may ban abortion all together except when a woman's health is in danger. That landmark ruling legalized abortion nationwide, expanding bodily autonomy for half of the American Public for the next 40+ years.
+  
+  This ruling stood for almost 20 years until the 1992 decision in Planned Parenthood of South Eastern Pennsylvania v. Casey in which the court upheld the central tenant of the 1973 decision in Roe, but allowed for more restrictions in the later periods of pregnancy, given that they did not pose an "undue burden" on access to abortion. This decision got rid of the trimester system and switched to a "fetal viability" and "undue burden" standard at which, often about 23 or 24 weeks, states may choose to ban abortion all together, but before that states may not pass laws whose "purpose or effect is to place substantial obstacles in the path of a woman seeking an abortion before the fetus attains viability". This new standard was left intentionally vague by the new court and allowed for various types of restrictive laws on access to abortion as long as states could argue that the restrictions were not an "undue burden", which was never explicitly defined.
+  
+  Beforehand, no strict ban could be imposed until 28 weeks and that was a fixed time period. The viability standard is based on a time frame from which "there is a realistic possibility of maintaining and nourishing a life outside the womb, so that the independent existence of the second life can in reason and all fairness be the object of state protection" and has been steadily decreasing with advances in medical practice, but most literature and medical organizations put this time period of viability at somewhere between 24 and 28 weeks. But the 24 weeks standard set out in Casey, while possible, is also an extremely early period for successful fetal viability outside of the womb, which was chosen on purpose in order to further restrict women's access to care.
+  
+## History of Federal Abortion Rights Cases:  
+
+```{r, include=FALSE}
+library(vistime)
+library(ggplot2)
+library(scales)
+library(lubridate)
+
+#Add graph on times abortion access was held up by roe over time and decision name
+#create CSV:
+df<- data.frame(Year=c(1973,1973,1975,1976,1979,1979,1979,1980,1981,1983,1986,1989,1990,1991,1992,1997, 2000,2000,2006,2007,2007,2016,2020,2022), Decision=c("Roe v. Wade (1973)","Doe v. Bolton (1973)", "Bigelow v. Virginia (1975)", "Planned Parenthood v. Danforth (1976)", "Bellotti v. Baird (1979)","Maher v. Roe (1979)", "Calautti v. Franklin (1979)", "Harris v. McRae (1980)", "L. v. Matheson (1981)", "City of Akron v. Akron Center for Reproductive Health (1983)", "Thornburgh v. American College (1986)", "Webster v. Reproductive Health Services (1989)", "Hodgson v. Minnesota (1990)", "Rust v. Sullivan (1991)", "Planned Parenthood v. Casey (1992)","Schenck v. Pro-Choice Network of Western New York (1997)", "Hill v. Colorado (2000)", "Stenberg v. Carhart (2000)","Ayotte v. Planned Parenthood(2006)", "Gonzales v. Carhart (2007)","Gonzales v. Planned Parenthood (2007)", "Whole Woman's Health v. Hellerstedt (2016)", "Medical Services v Russo (2020)", "Dobbs v. Jackson (2022)"), Status= c("Upheld Roe", "Upheld Roe","Upheld Roe", "Upheld Roe","Upheld Roe", "Weakened but Upheld Roe", "Upheld Roe", "Weakened but Upheld Roe", "Weakened but Upheld Roe", "Upheld Roe", "Upheld Roe", "Weakened but Upheld Roe", "Weakened but Upheld Roe", "Weakened but Upheld Roe","Upheld Roe", "Upheld Roe", "Upheld Roe","Upheld Roe","Upheld Roe", "Weakened but Upheld Roe", "Weakened but Upheld Roe", "Upheld Roe", "Upheld Roe", "Overturned Roe"))
+
+
+# Sort the dataframe by Year
+df <- df[order(df$Year), ]
+
+#
+# Define colors for different status levels
+status_levels <- c("Upheld Roe", "Weakened but Upheld Roe", "Overturned Roe")
+status_colors <- c("#00B050", "#FFC000", "#C00000")
+
+# Convert Status column to factor with specified levels and colors
+df$Status <- factor(df$Status, levels = status_levels)
+
+# Define positions and directions for the timeline segments
+positions <- c(0.5, -0.5, 1.0, -1.0, 1.5, -1.5, -2, 2, 0.75, -0.75, 1.25, -1.25, 1.75, -1.75, 2.5, -2.5,0.25, -0.25, -3, 3, -3.5, 3.5)
+directions <- c(1, -1)
+# Create a data frame for line positions
+line_pos <- data.frame(
+  "Year" = unique(df$Year),
+  "position" = rep(positions, length.out = length(unique(df$Year))),
+  "direction" = rep(directions, length.out = length(unique(df$Year)))
+)
+# Merge line positions with the main dataframe
+df <- merge(x = df, y = line_pos, by = "Year", all = TRUE)
+
+# Calculate text positions on the timeline
+text_offset <- 0.05
+df$year_count <- ave(df$Year==df$Year, df$Year, FUN=cumsum)
+#
+df$text_position <- (df$year_count * text_offset * df$direction) + df$position
+# Calculate text positions on the timeline
+#df$text_position<- df$position
+df$position <- ifelse(df$text_position > 0, df$text_position - 0.02, df$text_position + 0.02)
+df$text_position[11]<- 2.70
+df$text_position[19]<- 2.95
+df$text_position[16]<-2.40
+df$text_position[8]<- 2.10
+df$text_position[14]<- 1.9
+df$text_position[4]<- 1.55
+df$text_position[1]<- 1.05
+df$text_position[24]<- -3.55
+df$text_position[21]<- -3.15
+df$text_position[20]<- -2.90
+df$text_position[10]<- -2.90
+df$text_position[18]<- -2.70
+df$text_position[17]<- -2.40
+df$text_position[9]<- -2.50
+df$text_position[15]<- -2.10
+df$text_position[7]<- -1.80
+df$text_position[6]<- -1.60
+df$text_position[13]<- -0.70
+df$text_position[5]<- -1.35
+
+```
+
+```{r ,echo=FALSE}
+# Create the date sequence
+#year_date_range <- seq(from = as.Date("1971-01-01"), to = as.Date("2023-12-31"), by = "2 years")
+#date_format <- format(year_date_range, '%Y')
+#year_df <- data.frame(year_date_range, date_format)
+#
+#df$Year<- as.numeric(df$Year)
+# Convert Year column to numeric if it's not already numeric
+df$Year <- as.numeric(df$Year)
+
+# Create the date range
+year_date_range <- seq(as.Date(paste0(min(df$Year) - 3, "-01-01")), 
+                       as.Date(paste0(max(df$Year) + 15, "-12-31")), 
+                       by = "3 years")
+date_format <- format(year_date_range, '%Y')
+year_df <- data.frame(year_date_range, date_format)
+
+#
+
+#df$Year<- as.Date(df$Year)
+#
+timeline_plot<-ggplot(df,aes(x=Year,y=0, col=Status, label=Decision))
+timeline_plot<-timeline_plot+labs(col="Decision")
+timeline_plot<-timeline_plot+scale_color_manual(values=status_colors, labels=status_levels, drop = FALSE)
+timeline_plot<-timeline_plot+theme_classic()
+#
+# Plot horizontal black line for timeline
+timeline_plot<-timeline_plot+geom_hline(yintercept=0, 
+                color = "black", size=1.0)
+
+# Plot vertical segment lines for milestones
+timeline_plot<-timeline_plot+geom_segment(data=df[df$year_count == 1,] , aes(y=position,yend=0,xend=Year), color='black', size=0.3)
+#
+# Plot scatter points at zero and date
+timeline_plot<-timeline_plot+geom_point(aes(y=0), size=3)
+
+# Don't show axes, appropriately position legend
+timeline_plot<-timeline_plot+theme(axis.line.y=element_blank(),
+                 axis.text.y=element_blank(),
+                 axis.title.x=element_blank(),
+                 axis.title.y=element_blank(),
+                 axis.ticks.y=element_blank(),
+                 axis.text.x =element_text(angle = 30, vjust = 0.5, size = 14),
+                 axis.ticks.x =element_blank(),
+                 axis.line.x =element_blank(),
+                 legend.position = "bottom"
+                )
+#
+
+# Show text for each case
+timeline_plot<-timeline_plot+geom_text(aes(y=text_position,label=Decision),size=2.5, hjust = +0.4)
+#title
+# Title
+timeline_plot <- timeline_plot +
+  labs(col = "Decisions",
+       title = "Supreme Court Cases Concerning the Right to an Abortion Since Roe") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), 
+        legend.title = element_text(face = "bold"))
+
+
+
+print(timeline_plot)
+
+# Save the plot to a file
+ggsave("Abortion_Cases_final.png", plot = timeline_plot, width = 35, height = 10, dpi = 500)
+
+
+```
+
+
+## Full Federal Cases that Ruled on Abortion Rights:
+
+Roe v. Wade (1973)
+
+Doe v. Bolton (1973)
+
+Bigelow v. Virginia (1975) the Supreme Court ruled that states could not ban advertising by abortion clinics. Such bans violate the First Amendment guarantees of freedom of speech and freedom of the press 
+
+In Planned Parenthood v. Danforth (1976), the justices blocked a law requiring spousal consent for abortion.
+
+Bellotti v. Baird (1979) Struck down a law requiring parental or judicial consent for access to aboritons for minors.
+
+Maher v. Roe (1979) permitted states to exclude abortion services from Medicaid coverage.
+
+Colautti v. Franklin (1979) struck down an unconstitutionally vague Pennsylvania law that required physicians to try to save the life of a fetus that might have been viable.
+
+In Harris v. McRae (1980), the Court upheld the Hyde Amendment, a federal law that proscribed federal funding for abortions except when necessary to preserve life or as a result of rape or incest.
+
+In L. v. Matheson (1981), the Court upheld a law requiring parental notification when the patient is a minor living with parents.
+
+In City of Akron v. Akron Center for Reproductive Health (1983), the justices invalidated a wide range of limitations on abortion, such as a waiting period, parental consent without judicial bypass, and a ban on abortions outside of hospitals after the first trimester.
+
+Thornburgh v. American College of Obstetricians and Gynecologists (1986) struck down a law that required informed consent to include information about fetal development and alternatives to abortion.
+
+In Webster v. Reproductive Health Services (1989), Justice Rehnquist upheld rules requiring doctors to test for viability after 20 weeks and blocking state funding and state employee participation in abortion services.
+
+Hodgson v. Minnesota (1990) Gave the right for minors to get a court order for an abortion rather than having to have consent from both biological parents
+
+Rust v. Sullivan (1991) upheld a ban on certain federal funds being used for abortion referrals or counseling.
+
+Planned Parenthood of Southeastern Pennsylvannia v. Casey (1992)
+
+Schenck v. Pro-Choice Network of Western New York (1997)
+
+Hill v. Colorado (2000) upheld a law limiting protest and leafletting close to an abortion clinic.
+
+Stenberg v. Carhart (2000) struck down Nebraska’s ban on the dilation and extraction abortion procedure.
+
+Ayotte v. Planned Parenthood of Northern New England (2006)
+
+In Gonzales v. Carhart (2007), a slightly changed Court upheld a federal ban on the dilation and extraction procedure.
+
+Gonzales v. Planned Parenthood Federation of America, Inc. (2007)
+
+Whole Woman Health v. Hellerstedt (2016)
+
+Medical Services v Russo (2020)
+
+Dobbs v. Jackson Women Health Organization (2022)
+
+## The Dobbs Decision
+ 
+ The central tenant of Roe, that women implicitly have a constitutional right to abortion and thus control over their bodies was reaffirmed in the Casey decision, albeit weakened, and subsequently in any number of challenges at the district level, circuit level, and at the Supreme Court. Of the 24 cases on abortion rights seen by the Supreme Court during this period all but 1 upheld the central tenant of Roe, that Women have a constitutional right to an abortion. And these are just cases seen by the Supreme Court, hundreds of cases were heard and rejected at the district and circuit level on the basis of Roe.
+  
+  Despite almost 50 years of precedent; in 2022 the Supreme Court overruled Roe v. Wade and the Casey decision with the decision in Dobbs v. Jackson Woman's Health Organization. This case centered on a 2018 Mississippi law that banned most abortion procedures after 15 weeks of pregnancy, directly in violation of the tenets held in Roe and subsequently in Casey.
+In this ruling the court held that the constitution does not implicitly confer a right to abortion and that states may choose to regulate it as they see fit, essentially sending the decision back to the states.
+
+  This extremely unprecedented move, overruling an established precedent was based on arguments by the majority opinion that access to abortion was not "deeply rooted in this Nation's history or tradition" nor considered a right when the Due Process clause of the 14th Amendment was ratified in 1868. 
+
+## Issues with the 2022 Dobbs v.Jackson Woman's Health Organization ruling
+
+  The 2022 ruling in Dobbs was an extremely abnormal ruling for several reasons, but chief among them is the overruling of precedent. The American Legal system is built upon precedent through the doctrine of stare decisis, that courts should follow rulings established in earlier cases to decide upon current predicaments, although precedent is not almighty, it is of fundamental importance to the rule of law, continuity of governance, and overruling it requires special justification.
+ 
+  Not only did this ruling NOT provide special justification in the form of changing attitudes about abortion, new medical science about stages of pregnancy, or new proof about incongruity in other constitutional rights, it based its ruling on the idea that abortion was not "deeply rooted in this Nation's history or tradition" and recycled old conservative arguments about abortion not being an enumerated right during the ratification of the 14th amendment.
+  
+  These arguments are riddled with holes for many reasons. Firstly, and worst of all, if we established laws and constitutional rights in the United States based on only those that are "deeply rooted in this Nation's history or tradition" then slavery, which was a fundamental part of the American project up until the Civil War, would still be legal by this logic. 
+  
+  Likewise, women and anyone not white would still not retain the right to vote, interracial marriage would still be illegal and so would same-sex marriage, as all of those rights were not granted until the 20th or even 21st century. The list doesn't stop there, the ability for women to be educated, sign contracts, own property, or a whole host of other aspects of an unequal society would still be illegal if we only chose rights that were deeply rooted in the traditions of a Nation that was founded on democratic values and rights for all people... only if you were a landowning male.
+  
+  This line of thinking immediately favors more traditional conceptions of rights, it says that if a right didn't used to exist, then it never will. This completely discounts the idea of evolving morals and standards as society progresses. An idea that even the founders understood when they expressly mentioned un-enumerated rights in the 9th amendment of the constitution, (rights that are not explicitly listed in the constitution but implicit from the other rights included). The Constitution is a framework for understanding human rights, not a never-ending and unchanging, exhaustive list of rights decided by people 200 years ago.
+  
+  The second piece of the argument in Dobbs, mentions that abortion was not an enumerated right when the Due Process Clause of the 14th Amendment (the amendment that the right to an abortion is supported by) was ratified. The right to privacy, which confers the right to access an abortion, is the implicit right drawn from the Due Process clause of the 14th Amendment. 
+ 
+  Relying on only enumerated rights for the sake of our constitutional rights is an extremely limited way of viewing the Constitution as a framework for understanding natural rights and it’s also just wrong. The 9th Amendment expressly conveys rights that are implicit in other rights laid out in the constitution (but they themselves are not expressly listed) as "Unenumerated rights" and that those shall be retained by the people. Even the writers of the constitution understood they could not try to attempt to conceptualize a civil rights system of law and morality so vast as to capture every right a person may need, they understood that some rights must be interpreted from broader rights they laid out in initial amendments.
+  
+  Despite the very strong legal arguments against the ruling in Dobbs, the fundamental issue with the Dobbs ruling is not one of legal precedent but that it undoes decades of work for some semblance of equal treatment for half the country. This ruling tells women in this country that they have less control over their bodies simply by the nature of being a woman. It echoes an archaic idea that the state can decide what is best for them at one of the most pivotal and challenging moments in their lives simply because some elected officials believe they know best. This ruling not only opens up state legislatures to oppressive rulings that render women as vessels for birth, but also dooms a new generation of women to a lifetime of fighting for rights to their bodies, the right to protect themselves and their health given the potential dangers of pregnancy, for the right to decide about their health with their doctor, and the right to choose their future; whether it be with a child or not.
+
+
+## Conceptualizing the Right to an Abortion
+
+  Thinking about the right to an abortion can be hard, and some people may be tempted to fall prey to arguments made by anti-choice campaigns such as calling fetuses or developing groups of cells "babies". These are arguments made to make women feel guilty, and make them feel regret for their very difficult decision to end their pregnancy. 
+
+  This movement would have you think that women will unthinkingly make a very serious decision because they "don't care about life". But, think for a moment about how hard it must be to make one of the most serious decisions of your life all while a part of the country is telling you how bad of a person for doing it, regardless of the impact on your life, health or the circumstances that caused this eventuality. That is the scenario facing many women who choose to access abortion care and all of them do not make this decision lightly nor do they relish it. 
+  
+  At the end of the day whether you feel strongly about the value of a developing baby’s rights or not it doesn't matter, the abortion debate is, rather simply, about bodily autonomy. The state has a vested interest in both the woman's health and the life of the child, and this balance has largely driven the policy and debate on this issue to today, but that balance shouldn't be on an equal scale.
+  
+  Think about if someone had a deadly, but curable illness and they were bedridden in the hospital. The only solution to their sickness was some part of your body, a vial of blood, or donation of skin cells. As nice as it would be for you to donate that, no matter how serious the implications for you, even if it had no adverse effects on your life, you would not and should not be forced by the state to donate your body for that person. Those are your rights. Everyone should agree that the state cannot force you to risk your health, (yes, pregnancy is extremely risky for women) if you do not choose to. That is the point of the choice and of body autonomy. It may be a hard choice, but the government cannot take that choice away from you. That is essentially the debate over abortion rights, now the government may have more vested interests in protecting the life of the child later on in pregnancy, but in the early stages of pregnancy, certainly before viability, the government should not be able to force you to use your body for something elses' life.
+
+## Florida Abortion Status: 
+
+Currently, the state of Florida bans abortion after 6 weeks (before most women know they are pregnant) after passing a strict ban in April of 2023  and providers of such care can face criminal prosecution such as a felony in the 3rd degree. The state does make some exceptions for risk to a woman's life and cases of rape or incest. Even with these exceptions much of them will only apply if the gestation period is not yet 15 weeks and require documentation of potential physical harm to the mother, signed affidavits by 2 physicians, or court orders, police reports, and medical documents in the case of rape or incest. The law also limits the use of abortion pills; they must be delivered in person and dispensed by a physician, banning mail order or telehealth abortions.
+
+
+## Abortion Amendment
+
+Link to Petition:
+https://acrobat.adobe.com/link/track?uri=urn:aaid:scds:US:a38dd5f2-aa31-301e-97f4-f8b463ade074
+
+Sign in PRINT and mail to address on petition by December 29th, 2023 or drop off by the 26th to
+6800 Almansa Street, Coral Gables, Florida
+
+Petition Language:
+  
+  Ballot Title
+  
+  Amendment to Limit Government Interference with Abortion
+
+  Ballot Summary
+  
+  No law shall prohibit, penalize, delay, or restrict abortion before viability or when necessary to protect the patient's health, as determined by the patient's healthcare provider. This amendment does not change the Legislature's constitutional authority to require notification to a parent or guardian before a minor has an abortion.
+  
+  Context:
+  
+  Florida state constitution already has a right to privacy embedded in its amendments that could be used to support a right to an abortion, much like what was done at the federal level. But to ensure access to care and the right to choose for the millions of women in the state of Florida and considering how restrictive the current state's law is and their willingness to ignore the right to privacy, we must have an explicit and enumerated right to an abortion in the constitution.
+
+
